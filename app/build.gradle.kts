@@ -1,26 +1,52 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 }
 
+// Assinatura de release: lida de `keystore.properties` na raiz (fora do git).
+// Sem esse arquivo, o build de release sai sem assinatura (útil em CI / clones).
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        load(FileInputStream(keystorePropertiesFile))
+    }
+}
+val hasReleaseSigning = keystorePropertiesFile.exists()
+
 android {
-    namespace = "com.example.testerenato"
+    namespace = "io.github.kaiocastroxz.tento"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.testerenato"
+        applicationId = "io.github.kaiocastroxz.tento"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             optimization {
                 enable = false
             }

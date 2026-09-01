@@ -93,7 +93,7 @@ diretamente com JUnit.
 ## Arquitetura
 
 ```
-app/src/main/java/com/example/testerenato/
+app/src/main/java/io/github/kaiocastroxz/tento/
 ├── MainActivity.kt                 ComponentActivity + setContent + tema
 ├── model/
 │   ├── Truco.kt                    constantes de regra (12, sequência 1→3→6→9→12)
@@ -160,16 +160,44 @@ Pela linha de comando:
 
 ```bash
 ./gradlew :app:assembleDebug        # -> app/build/outputs/apk/debug/app-debug.apk
-./gradlew :app:assembleRelease      # -> app/build/outputs/apk/release/app-release-unsigned.apk
-./gradlew :app:bundleRelease        # -> .aab (formato exigido pela Play Store)
+./gradlew :app:bundleRelease        # -> app/build/outputs/bundle/release/app-release.aab
 ```
 
-O release sai **sem assinatura**. Para publicar é preciso:
+## Publicar na Play Store
 
-1. Trocar o `applicationId` (`com.example.*` é bloqueado pela Play Store).
-2. Gerar uma *upload key* (`keytool -genkeypair …`) e configurar `signingConfigs`
-   lendo um `keystore.properties` **fora do git** (já está no `.gitignore`).
-3. Regenerar os ícones legados (Android 7.0–7.1) — hoje ainda são os do template.
+Já está pronto no projeto: `applicationId = io.github.kaiocastroxz.tento`,
+`signingConfigs` que lê `keystore.properties`, e os ícones (adaptativo + PNGs
+legados). Falta só a sua chave e a Play Console.
+
+**1. Gerar a chave de upload** (uma vez — guarde o `.jks` e as senhas com cuidado):
+
+```bash
+keytool -genkeypair -v -keystore ~/tento-upload.jks \
+  -alias tento -keyalg RSA -keysize 2048 -validity 10000
+```
+
+**2. Criar `keystore.properties`** na raiz (está no `.gitignore`), a partir do
+[`keystore.properties.example`](keystore.properties.example):
+
+```properties
+storeFile=/home/voce/tento-upload.jks
+storePassword=...
+keyAlias=tento
+keyPassword=...
+```
+
+**3. Gerar o AAB assinado:**
+
+```bash
+./gradlew :app:bundleRelease
+```
+
+**4. Play Console** (conta de dev = US$ 25 única):
+criar o app, subir o `.aab` em Teste Interno → Teste Fechado → Produção,
+preencher a ficha (ícone 512×512 em [`docs/play-store/icon-512.png`](docs/play-store/icon-512.png),
+screenshots em `docs/screenshots/`), classificação de conteúdo (→ "Livre"),
+Segurança dos Dados (**nada é coletado** — offline, sem login), política de
+privacidade (pode ser uma página no GitHub Pages).
 
 ---
 

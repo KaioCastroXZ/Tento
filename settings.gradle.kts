@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Teste Renato"
+rootProject.name = "Tento"
 include(":app")
