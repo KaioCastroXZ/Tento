@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="felt_green_dark">#FF0B3B2E</color>
+    <color name="felt_green_light">#FF1C6A50</color>
+    <color name="gold">#FFD4AF37</color>
+</resources>

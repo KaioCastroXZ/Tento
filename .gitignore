@@ -1,0 +1,20 @@
+# Gradle
+.gradle/
+build/
+/captures
+.externalNativeBuild
+.cxx
+
+# Android Studio / IntelliJ
+*.iml
+/.idea
+.DS_Store
+
+# Local config (SDK path etc.)
+local.properties
+
+# Assinatura / keystore — NUNCA versionar
+*.jks
+*.keystore
+keystore.properties
+key.properties
